@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#4f46e5">
+    <title>ឆ្នោតយួន - តាមដាននិងវិភាគ</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --hot: #ef4444;
+            --warm: #f59e0b;
+            --cold: #3b82f6;
+            --radius: 16px;
+            --radius-sm: 10px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f1f5f9 30%, #fce7f3 70%, #e0e7ff 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 0;
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============ APP SHELL ============ */
+        .app-shell {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg);
+            position: relative;
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ============ TOP NAV BAR ============ */
+        .nav-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-bar .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 1.1em;
+            color: var(--primary-dark);
+        }
+        .nav-bar .brand .logo-icon { font-size: 1.5em; }
+        .nav-actions { display: flex; gap: 8px; }
+        .nav-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg);
+            font-size: 1.1em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .nav-btn:active { background: #e2e8f0; transform: scale(0.95); }
+
+        /* ============ MAIN CONTENT ============ */
+        .main-content {
+            padding: 12px 12px 80px;
+        }
+
+        /* ============ CARDS ============ */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-header h3 {
+            font-size: 0.95em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge {
+            background: var(--primary-light);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7em;
+            font-weight: 700;
+        }
+
+        /* ============ STATS ROW ============ */
+        .stats-mini {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .stat-mini {
+            background: var(--bg);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+        }
+        .stat-mini .val {
+            font-size: 1.5em;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .stat-mini .lbl {
+            font-size: 0.75em;
+            color: var(--text-secondary);
+        }
+
+        /* ============ INPUT GROUP ============ */
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .input-group {
+            background: var(--bg);
+            padding: 8px;
+            border-radius: var(--radius-sm);
+        }
+        .input-group label {
+            font-size: 0.7em;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 2px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1em;
+            font-weight: 700;
+            background: white;
+            transition: border 0.2s;
+        }
+        .input-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        }
+        .post-label {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.8em;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        /* ============ BUTTONS ============ */
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.85em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            justify-content: center;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: var(--primary); color: white; width: 100%; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-sm { padding: 6px 12px; font-size: 0.75em; }
+        .btn-block { width: 100%; }
+        .btn-row { display: flex; gap: 8px; margin-top: 8px; }
+
+        /* ============ TABS ============ */
+        .tabs-scroll {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 4px 0;
+            margin-bottom: 12px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .tabs-scroll::-webkit-scrollbar { display: none; }
+        .tab-pill {
+            padding: 8px 14px;
+            border: none;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75em;
+            font-weight: 600;
+            white-space: nowrap;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .tab-pill.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* ============ TABLE ============ */
+        .table-wrap {
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            -webkit-overflow-scrolling: touch;
+        }
+        .table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7em;
+        }
+        .table-wrap th {
+            background: var(--primary);
+            color: white;
+            padding: 8px 6px;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            font-size: 0.7em;
+            white-space: nowrap;
+        }
+        .table-wrap td {
+            padding: 6px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+        .table-wrap tr:active td { background: #f1f5f9; }
+        .row-hot { background: #fef2f2 !important; }
+        .row-warm { background: #fffbeb !important; }
+        .row-cold { background: #eff6ff !important; }
+
+        /* ============ PROGRESS ============ */
+        .mini-progress {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            min-width: 40px;
+        }
+        .mini-progress-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.3s;
+        }
+        .fill-hot { background: var(--hot); }
+        .fill-warm { background: var(--warm); }
+        .fill-cold { background: var(--cold); }
+
+        /* ============ CHART ============ */
+        .bar-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 140px;
+            padding: 8px 0;
+            overflow-x: auto;
+        }
+        .bar-item {
+            flex: 1;
+            min-width: 28px;
+            background: linear-gradient(to top, var(--primary), var(--primary-light));
+            border-radius: 6px 6px 0 0;
+            text-align: center;
+            color: white;
+            font-size: 0.6em;
+            font-weight: 700;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding-top: 2px;
+        }
+        .bar-item:active { filter: brightness(1.2); }
+        .bar-pct { font-size: 0.7em; }
+        .bar-lbl {
+            position: absolute;
+            bottom: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-secondary);
+            font-size: 0.55em;
+            white-space: nowrap;
+        }
+
+        /* ============ TAGS ============ */
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.6em;
+            font-weight: 700;
+        }
+        .tag-hot { background: #fee2e2; color: var(--hot); }
+        .tag-warm { background: #fef3c7; color: #92400e; }
+        .tag-cold { background: #dbeafe; color: var(--cold); }
+        .tag-none { background: #f1f5f9; color: #94a3b8; }
+
+        /* ============ DAY CARDS ============ */
+        .day-list { display: flex; flex-direction: column; gap: 6px; }
+        .day-item {
+            background: var(--bg);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8em;
+            border-left: 4px solid var(--primary);
+        }
+        .day-item .day-name { font-weight: 700; min-width: 60px; }
+        .day-item .day-stats { font-size: 0.75em; color: var(--text-secondary); text-align: right; }
+
+        /* ============ BOTTOM NAV ============ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            border-top: 1px solid var(--border);
+            padding: 6px 0;
+            padding-bottom: max(6px, env(safe-area-inset-bottom));
+            z-index: 100;
+        }
+        .bottom-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 0;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            font-size: 0.65em;
+            font-weight: 500;
+            gap: 2px;
+            border: none;
+            background: none;
+        }
+        .bottom-nav-item .nav-icon { font-size: 1.3em; }
+        .bottom-nav-item.active { color: var(--primary); font-weight: 700; }
+
+        /* ============ MODAL ============ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .modal-sheet {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: #cbd5e1;
+            border-radius: 2px;
+            margin: 0 auto 16px;
+        }
+
+        /* ============ ALERT ============ */
+        .alert {
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75em;
+            margin-bottom: 8px;
+        }
+        .alert-info { background: #dbeafe; color: #1e40af; }
+        .alert-warn { background: #fef3c7; color: #92400e; }
+
+        /* ============ TOAST ============ */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 300;
+            background: #1e293b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 0.85em;
+            font-weight: 600;
+            animation: fadeInOut 2s ease forwards;
+            pointer-events: none;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+
+        /* ============ SEARCH ============ */
+        .search-box {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 25px;
+            font-size: 0.85em;
+            background: white;
+        }
+
+        /* ============ EMPTY STATE ============ */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+        .empty-state .icon { font-size: 3em; margin-bottom: 12px; }
+
+        @media (min-width: 481px) {
+            .app-shell { border-radius: 20px; margin-top: 10px; margin-bottom: 10px; min-height: calc(100vh - 20px); }
+            .bottom-nav { border-radius: 0 0 20px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <!-- ============ TOP NAV ============ -->
+        <div class="nav-bar">
+            <div class="brand">
+                <span class="logo-icon">🎲</span>
+                <span>ឆ្នោតយួន</span>
+            </div>
+            <div class="nav-actions">
+                <button class="nav-btn" onclick="showDatePicker()" title="កាលបរិច្ឆេទ">📅</button>
+                <button class="nav-btn" onclick="exportData()" title="ទាញយក">📥</button>
+            </div>
+        </div>
+
+        <!-- ============ MAIN CONTENT ============ -->
+        <div class="main-content" id="mainContent">
+            <!-- ទំព័រ: ដើម (Home) -->
+            <div id="page-home">
+                <!-- កាតបញ្ចូល -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📝 បញ្ចូលលទ្ធផលថ្មី</h3>
+                        <span class="badge">៥ ប៉ុស</span>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group"><span class="post-label">ប៉ុស A</span><label>ពីលេខ</label><input type="text" id="postA_2digit" placeholder="00-99" maxlength="2" inputmode="numeric"><label>បីលេខ</label><input type="text" id="postA_3digit" placeholder="000-999" maxlength="3" inputmode="numeric"></div>
+                        <div class="input-group"><span class="post-label">ប៉ុស B</span><label>ពីលេខ</label><input type="text" id="postB_2digit" placeholder="00-99" maxlength="2" inputmode="numeric"><label>បីលេខ</label><input type="text" id="postB_3digit" placeholder="000-999" maxlength="3" inputmode="numeric"></div>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group"><span class="post-label">ប៉ុស C</span><label>ពីលេខ</label><input type="text" id="postC_2digit" placeholder="00-99" maxlength="2" inputmode="numeric"><label>បីលេខ</label><input type="text" id="postC_3digit" placeholder="000-999" maxlength="3" inputmode="numeric"></div>
+                        <div class="input-group"><span class="post-label">ប៉ុស D</span><label>ពីលេខ</label><input type="text" id="postD_2digit" placeholder="00-99" maxlength="2" inputmode="numeric"><label>បីលេខ</label><input type="text" id="postD_3digit" placeholder="000-999" maxlength="3" inputmode="numeric"></div>
+                    </div>
+                    <div class="input-group" style="margin-bottom:8px;"><span class="post-label">ប៉ុស H</span><div style="display:flex;gap:8px;"><div style="flex:1;"><label>ពីលេខ</label><input type="text" id="postH_2digit" placeholder="00-99" maxlength="2" inputmode="numeric" style="width:100%;"></div><div style="flex:1;"><label>បីលេខ</label><input type="text" id="postH_3digit" placeholder="000-999" maxlength="3" inputmode="numeric" style="width:100%;"></div></div></div>
+                    <div class="btn-row">
+                        <button class="btn btn-success btn-block" onclick="saveResult()">💾 រក្សាទុក</button>
+                        <button class="btn btn-outline btn-sm" onclick="clearInputs()">🔄 សម្អាត</button>
+                    </div>
+                </div>
+
+                <!-- ស្ថិតិសង្ខេប -->
+                <div class="stats-mini">
+                    <div class="stat-mini"><div class="val" id="totalRecords">0</div><div class="lbl">📅 ទិន្នន័យសរុប</div></div>
+                    <div class="stat-mini"><div class="val" id="totalDraws">0</div><div class="lbl">🎯 លេខសរុប</div></div>
+                    <div class="stat-mini"><div class="val" id="uniqueNumbers">0</div><div class="lbl">🔢 លេខប្លែកៗ</div></div>
+                    <div class="stat-mini"><div class="val" id="coveragePercent">0%</div><div class="lbl">📊 គ្របដណ្តប់</div></div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs-scroll" id="homeTabs">
+                    <button class="tab-pill active" onclick="switchHomeTab('overview')">📊 ទិដ្ឋភាពទូទៅ</button>
+                    <button class="tab-pill" onclick="switchHomeTab('2digit')">🔢 ពីលេខ</button>
+                    <button class="tab-pill" onclick="switchHomeTab('2group')">📦 ក្រុម១០</button>
+                    <button class="tab-pill" onclick="switchHomeTab('3digit')">🔢 បីលេខ</button>
+                    <button class="tab-pill" onclick="switchHomeTab('3group')">📦 ក្រុម១០០</button>
+                </div>
+
+                <div id="homeTabContent"></div>
+            </div>
+
+            <!-- ទំព័រ: វិភាគតាមថ្ងៃ -->
+            <div id="page-daily" style="display:none;">
+                <div class="card"><div class="card-header"><h3>📅 ស្ថិតិតាមថ្ងៃ</h3></div><div class="day-list" id="dailyStatsList"></div></div>
+                <div class="card"><div class="card-header"><h3>📊 ក្រាហ្វប្រៀបធៀប</h3></div><div class="bar-row" id="dailyChart"></div></div>
+                <div class="card"><div class="card-header"><h3>🔥 លេខចេញច្រើនតាមថ្ងៃ</h3></div><div id="dailyTopNumbers"></div></div>
+                <div class="card"><div class="card-header"><h3>❄️ លេខមិនទាន់ចេញតាមថ្ងៃ</h3></div><div id="dailyMissingNumbers"></div></div>
+            </div>
+
+            <!-- ទំព័រ: ព្យាករណ៍ -->
+            <div id="page-predict" style="display:none;">
+                <div class="card">
+                    <div class="card-header"><h3>🎯 ការព្យាករណ៍</h3></div>
+                    <div class="alert alert-info">📌 ផ្អែកលើស្ថិតិ មិនមែនការធានា!</div>
+                    <div class="stats-mini">
+                        <div class="stat-mini"><div class="lbl">លេខ 2ខ្ទង់មានឱកាសខ្ពស់</div><div style="font-size:0.8em;font-weight:600;" id="predicted_2digit">-</div></div>
+                        <div class="stat-mini"><div class="lbl">ខ្ទង់រយមានឱកាសខ្ពស់</div><div style="font-size:0.8em;font-weight:600;" id="predicted_hundred">-</div></div>
+                    </div>
+                    <div class="stat-mini" style="margin-top:8px;"><div class="lbl">⚠️ លេខមិនទាន់ចេញយូរ</div><div style="font-size:0.75em;" id="long_overdue">-</div></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3>📈 ក្រាហ្វ Top 15 លេខពេញនិយម</h3></div>
+                    <div class="bar-row" id="predictChart"></div>
+                </div>
+            </div>
+
+            <!-- ទំព័រ: ប្រវត្តិ -->
+            <div id="page-history" style="display:none;">
+                <div class="card">
+                    <div class="card-header"><h3>📜 ប្រវត្តិទាំងអស់</h3><span class="badge" id="historyCount">0</span></div>
+                    <div class="search-box"><input type="text" id="historySearch" placeholder="🔍 ស្វែងរកតាមកាលបរិច្ឆេទ..." oninput="filterHistory()"></div>
+                    <div class="table-wrap" style="max-height:400px;"><table><thead><tr><th>ល.រ</th><th>ថ្ងៃ</th><th>កាលបរិច្ឆេទ</th><th>ម៉ោង</th><th>A</th><th>B</th><th>C</th><th>D</th><th>H</th></tr></thead><tbody id="historyBody"></tbody></table></div>
+                    <div style="text-align:center;margin-top:8px;"><button class="btn btn-outline btn-sm" onclick="exportData()">📥 ទាញយក CSV</button></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ BOTTOM NAV ============ -->
+        <div class="bottom-nav">
+            <button class="bottom-nav-item active" onclick="switchPage('home')">
+                <span class="nav-icon">🏠</span><span>ដើម</span>
+            </button>
+            <button class="bottom-nav-item" onclick="switchPage('daily')">
+                <span class="nav-icon">📅</span><span>តាមថ្ងៃ</span>
+            </button>
+            <button class="bottom-nav-item" onclick="switchPage('predict')">
+                <span class="nav-icon">🎯</span><span>ព្យាករណ៍</span>
+            </button>
+            <button class="bottom-nav-item" onclick="switchPage('history')">
+                <span class="nav-icon">📜</span><span>ប្រវត្តិ</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ DATE PICKER MODAL ============ -->
+    <div id="dateModal" class="modal-overlay" style="display:none;" onclick="if(event.target===this)hideDatePicker()">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <h3 style="margin-bottom:12px;">📅 ជ្រើសរើសកាលបរិច្ឆេទ</h3>
+            <input type="date" id="drawDate" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-size:1em;margin-bottom:8px;">
+            <select id="drawTime" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-size:1em;margin-bottom:12px;">
+                <option value="16:00">ម៉ោង ៤:០០ ល្ងាច</option>
+                <option value="18:30">ម៉ោង ៦:៣០ ល្ងាច</option>
+            </select>
+            <button class="btn btn-primary btn-block" onclick="hideDatePicker()">✅ យល់ព្រម</button>
+        </div>
+    </div>
+
+    <script>
+        // ============ DATA ============
+        const DAYS_KHMER = ['អាទិត្យ', 'ច័ន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
+        let currentPage = 'home';
+        let currentHomeTab = 'overview';
+        let allHistoryData = [];
+
+        document.getElementById('drawDate').valueAsDate = new Date();
+
+        function getData() { return JSON.parse(localStorage.getItem('lotteryData') || '[]'); }
+        function saveData(d) { localStorage.setItem('lotteryData', JSON.stringify(d)); }
+        function getDayIdx(d) { return new Date(d).getDay(); }
+        function getDayName(i) { return DAYS_KHMER[i]; }
+        function showToast(msg) {
+            const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+            document.body.appendChild(t); setTimeout(() => t.remove(), 2000);
+        }
+
+        // ============ NAVIGATION ============
+        function switchPage(page) {
+            currentPage = page;
+            ['home','daily','predict','history'].forEach(p => document.getElementById('page-'+p).style.display = p===page ? 'block' : 'none');
+            document.querySelectorAll('.bottom-nav-item').forEach((b,i) => {
+                const pages = ['home','daily','predict','history'];
+                b.classList.toggle('active', pages[i] === page);
+            });
+            if (page === 'daily') refreshDailyTab();
+            if (page === 'predict') refreshPredictTab();
+            if (page === 'history') refreshHistoryTab();
+            if (page === 'home') refreshHomeTab();
+        }
+
+        function switchHomeTab(tab) {
+            currentHomeTab = tab;
+            document.querySelectorAll('#homeTabs .tab-pill').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            refreshHomeTab();
+        }
+
+        function showDatePicker() {
+            document.getElementById('dateModal').style.display = 'flex';
+            document.getElementById('drawDate').valueAsDate = new Date();
+        }
+        function hideDatePicker() {
+            document.getElementById('dateModal').style.display = 'none';
+            showToast('📅 កាលបរិច្ឆេទត្រូវបានកំណត់');
+        }
+
+        // ============ SAVE ============
+        function saveResult() {
+            const posts = ['A','B','C','D','H'];
+            const result = {
+                date: document.getElementById('drawDate').value,
+                time: document.getElementById('drawTime').value,
+                dayOfWeek: getDayIdx(document.getElementById('drawDate').value),
+                posts: {}
+            };
+            let err = false;
+            posts.forEach(p => {
+                const td = document.getElementById(`post${p}_2digit`).value;
+                const thd = document.getElementById(`post${p}_3digit`).value;
+                if (!td || !thd || td.length!==2 || isNaN(td) || thd.length!==3 || isNaN(thd)) {
+                    alert(`សូមបញ្ចូលលេខត្រឹមត្រូវសម្រាប់ប៉ុស ${p}`); err = true; return;
+                }
+                result.posts[p] = { twoDigit: td, threeDigit: thd };
+            });
+            if (err) return;
+            const data = getData();
+            const dup = data.findIndex(r => r.date === result.date && r.time === result.time);
+            if (dup >= 0) { if (!confirm('ទិន្នន័យនេះមានរួចហើយ ជំនួសទេ?')) return; data[dup] = result; }
+            else data.push(result);
+            saveData(data);
+            showToast('✅ រក្សាទុកដោយជោគជ័យ!');
+            clearInputs();
+            refreshAll();
+        }
+
+        function clearInputs() {
+            ['A','B','C','D','H'].forEach(p => {
+                document.getElementById(`post${p}_2digit`).value='';
+                document.getElementById(`post${p}_3digit`).value='';
+            });
+        }
+
+        // ============ REFRESH ALL ============
+        function refreshAll() {
+            const data = getData();
+            allHistoryData = data;
+            if (data.length === 0) {
+                ['totalRecords','totalDraws','uniqueNumbers'].forEach(id => document.getElementById(id).textContent='0');
+                document.getElementById('coveragePercent').textContent='0%';
+                document.getElementById('homeTabContent').innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>មិនទាន់មានទិន្នន័យ</p><p style="font-size:0.8em;">សូមបញ្ចូលលទ្ធផលឆ្នោតដើម្បីចាប់ផ្តើមវិភាគ</p></div>';
+                return;
+            }
+
+            let totalDraws = 0;
+            const all2 = [], all3 = [];
+            data.forEach(r => Object.values(r.posts).forEach(p => { totalDraws++; all2.push(p.twoDigit); all3.push(p.threeDigit); }));
+
+            document.getElementById('totalRecords').textContent = data.length;
+            document.getElementById('totalDraws').textContent = totalDraws;
+            const uniq = new Set(all2);
+            document.getElementById('uniqueNumbers').textContent = uniq.size;
+            document.getElementById('coveragePercent').textContent = ((uniq.size/100)*100).toFixed(1)+'%';
+
+            // Frequencies
+            const f2={}, f3={}, fh={};
+            data.forEach(r => Object.values(r.posts).forEach(p => {
+                if(!f2[p.twoDigit]) f2[p.twoDigit]={c:0,ls:null}; f2[p.twoDigit].c++; f2[p.twoDigit].ls=r.date;
+                if(!f3[p.threeDigit]) f3[p.threeDigit]={c:0}; f3[p.threeDigit].c++;
+                const hd=p.threeDigit[0]; if(!fh[hd]) fh[hd]={c:0}; fh[hd].c++;
+            }));
+            const s2=Object.entries(f2).sort((a,b)=>b[1].c-a[1].c);
+            const s3=Object.entries(f3).sort((a,b)=>b[1].c-a[1].c);
+            const sh=Object.entries(fh).sort((a,b)=>b[1].c-a[1].c);
+
+            // Store globally
+            window._s2 = s2; window._s3 = s3; window._sh = sh; window._tot = totalDraws; window._data = data;
+
+            refreshHomeTab();
+            if (currentPage === 'daily') refreshDailyTab();
+            if (currentPage === 'predict') refreshPredictTab();
+            if (currentPage === 'history') refreshHistoryTab();
+        }
+
+        function refreshHomeTab() {
+            const s2 = window._s2, s3 = window._s3, sh = window._sh, tot = window._tot, data = window._data;
+            if (!s2 || !tot) return;
+            const container = document.getElementById('homeTabContent');
+
+            switch(currentHomeTab) {
+                case 'overview':
+                    container.innerHTML = buildOverviewHTML(s2, tot);
+                    break;
+                case '2digit':
+                    container.innerHTML = build2DigitHTML(s2, tot);
+                    break;
+                case '2group':
+                    container.innerHTML = build2GroupHTML(s2, tot);
+                    break;
+                case '3digit':
+                    container.innerHTML = build3DigitHTML(sh, tot);
+                    break;
+                case '3group':
+                    container.innerHTML = build3GroupHTML(s3, tot);
+                    break;
+            }
+        }
+
+        function buildOverviewHTML(s2, tot) {
+            const top15 = s2.slice(0,15);
+            const maxP = Math.max(...top15.map(([_,d])=>(d.c/tot)*100), 1);
+            const bars = top15.map(([n,d])=>{
+                const p = (d.c/tot)*100;
+                return `<div class="bar-item" style="height:${Math.max((p/maxP)*120,15)}px;" title="${n}: ${d.c}ដង (${p.toFixed(1)}%)"><span class="bar-pct">${p.toFixed(1)}%</span><span class="bar-lbl">${n}</span></div>`;
+            }).join('');
+
+            // Groups overview
+            const groups = {};
+            for(let g=0;g<10;g++){const s=g*10;groups[`${s.toString().padStart(2,'0')}-${(s+9).toString().padStart(2,'0')}`]={c:0};}
+            s2.forEach(([n,d])=>{const g=Math.floor(parseInt(n)/10)*10;const l=`${g.toString().padStart(2,'0')}-${(g+9).toString().padStart(2,'0')}`;if(groups[l]) groups[l].c+=d.c;});
+            const gCards = Object.entries(groups).sort((a,b)=>b[1].c-a[1].c).slice(0,5).map(([l,g])=>{
+                const p=((g.c/tot)*100).toFixed(1);
+                const bc=p>15?'fill-hot':p>8?'fill-warm':'fill-cold';
+                return `<div class="stat-mini"><div class="lbl">ក្រុម ${l}</div><div style="font-weight:700;">${p}%</div><div class="mini-progress"><div class="mini-progress-fill ${bc}" style="width:${Math.max(p,1)}%"></div></div></div>`;
+            }).join('');
+
+            return `
+                <div class="card"><div class="card-header"><h3>📈 Top 15 លេខពេញនិយម</h3></div><div class="bar-row">${bars}</div></div>
+                <div class="card"><div class="card-header"><h3>📦 ក្រុមពេញនិយម</h3></div><div class="stats-mini">${gCards}</div></div>
+            `;
+        }
+
+        function build2DigitHTML(s2, tot) {
+            const all=[];
+            for(let i=0;i<100;i++) all.push(i.toString().padStart(2,'0'));
+            const map={}; s2.forEach(([n,d])=>map[n]=d);
+            const arr=all.map(n=>({n, c:map[n]?map[n].c:0, pct:map[n]?(map[n].c/tot)*100:0, ls:map[n]?map[n].ls:'មិនទាន់ចេញ'})).sort((a,b)=>b.pct-a.pct);
+            const top10 = arr.filter(x=>x.c>0).slice(0,10).map(x=>`${x.n}(${x.pct.toFixed(1)}%)`).join(', ')||'-';
+            const cold10 = arr.filter(x=>x.c===0).slice(0,10).map(x=>x.n).join(', ')||'គ្មាន';
+
+            const rows = arr.map(x=>{
+                const cls=x.pct>2?'row-hot':x.pct>1?'row-warm':x.c===0?'row-cold':'';
+                const bc=x.pct>2?'fill-hot':x.pct>1?'fill-warm':'fill-cold';
+                const tag=x.pct>2?'<span class="tag tag-hot">🔥</span>':x.pct>1?'<span class="tag tag-warm">🟡</span>':x.c===0?'<span class="tag tag-none">⚪</span>':'<span class="tag tag-cold">❄️</span>';
+                return `<tr class="${cls}"><td><strong>${x.n}</strong></td><td>${x.c}</td><td>${x.pct.toFixed(2)}%</td><td><div class="mini-progress"><div class="mini-progress-fill ${bc}" style="width:${Math.max(x.pct*10,0.5)}%"></div></div></td><td style="font-size:0.65em;">${x.ls}</td><td>${tag}</td></tr>`;
+            }).join('');
+
+            return `<div class="card">
+                <div class="stats-mini" style="margin-bottom:8px;"><div class="stat-mini"><div class="lbl">🔥 ពេញនិយម</div><div style="font-size:0.7em;color:var(--hot);">${top10}</div></div><div class="stat-mini"><div class="lbl">❄️ មិនទាន់ចេញ</div><div style="font-size:0.7em;color:var(--cold);">${cold10}</div></div></div>
+                <div class="table-wrap"><table><thead><tr><th>លេខ</th><th>ដង</th><th>%</th><th>របារ</th><th>ចុងក្រោយ</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+            </div>`;
+        }
+
+        function build2GroupHTML(s2, tot) {
+            const groups={};
+            for(let g=0;g<10;g++){const s=g*10,lbl=`${s.toString().padStart(2,'0')}-${(s+9).toString().padStart(2,'0')}`; groups[lbl]={c:0,s,e:s+9};}
+            s2.forEach(([n,d])=>{const g=Math.floor(parseInt(n)/10),s=g*10,lbl=`${s.toString().padStart(2,'0')}-${(s+9).toString().padStart(2,'0')}`; if(groups[lbl]) groups[lbl].c+=d.c;});
+            const ga=Object.entries(groups).map(([l,g])=>({l,range:`${g.s.toString().padStart(2,'0')}-${g.e.toString().padStart(2,'0')}`,c:g.c,pct:(g.c/tot)*100})).sort((a,b)=>b.pct-a.pct);
+            const maxP=Math.max(...ga.map(g=>g.pct),1);
+            const bars=ga.map(g=>`<div class="bar-item" style="height:${Math.max((g.pct/maxP)*120,15)}px;" title="${g.l}: ${g.c}ដង"><span class="bar-pct">${g.pct.toFixed(1)}%</span><span class="bar-lbl">${g.l}</span></div>`).join('');
+            const rows=ga.map(g=>{const bc=g.pct>15?'fill-hot':g.pct>8?'fill-warm':'fill-cold';const cls=g.pct>15?'row-hot':g.pct>8?'row-warm':'row-cold';const tag=g.pct>15?'<span class="tag tag-hot">🔥</span>':g.pct>8?'<span class="tag tag-warm">🟡</span>':'<span class="tag tag-cold">❄️</span>';return `<tr class="${cls}"><td><strong>${g.l}</strong></td><td>${g.range}</td><td>${g.c}</td><td>${g.pct.toFixed(2)}%</td><td><div class="mini-progress"><div class="mini-progress-fill ${bc}" style="width:${Math.max(g.pct,1)}%"></div></div></td><td>${tag}</td></tr>`;}).join('');
+            return `<div class="card"><div class="bar-row">${bars}</div><div class="table-wrap" style="margin-top:8px;"><table><thead><tr><th>ក្រុម</th><th>ចន្លោះ</th><th>ដង</th><th>%</th><th>របារ</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+        }
+
+        function build3DigitHTML(sh, tot) {
+            const all=[];
+            for(let i=0;i<10;i++){const d=i.toString();const f=sh.find(([n])=>n===d);all.push({d,c:f?f[1].c:0,pct:f?(f[1].c/tot)*100:0});}
+            all.sort((a,b)=>b.pct-a.pct);
+            const rows=all.map(x=>{const bc=x.pct>12?'fill-hot':x.pct>8?'fill-warm':'fill-cold';const cls=x.pct>12?'row-hot':x.pct>8?'row-warm':'row-cold';const tag=x.pct>12?'<span class="tag tag-hot">🔥</span>':x.pct>8?'<span class="tag tag-warm">🟡</span>':'<span class="tag tag-cold">❄️</span>';return `<tr class="${cls}"><td><strong>${x.d}</strong></td><td>${x.c}</td><td>${x.pct.toFixed(2)}%</td><td><div class="mini-progress"><div class="mini-progress-fill ${bc}" style="width:${Math.max(x.pct*3,2)}%"></div></div></td><td>${tag}</td></tr>`;}).join('');
+            const top3=all.slice(0,3).map(x=>`ខ្ទង់ ${x.d}(${x.pct.toFixed(1)}%)`).join(', ');
+            const cold3=all.slice(-3).map(x=>`ខ្ទង់ ${x.d}(${x.pct.toFixed(1)}%)`).join(', ');
+            return `<div class="card">
+                <div class="stats-mini" style="margin-bottom:8px;"><div class="stat-mini"><div class="lbl">🔥 ញឹកញាប់</div><div style="font-size:0.75em;color:var(--hot);">${top3}</div></div><div class="stat-mini"><div class="lbl">❄️ តិច</div><div style="font-size:0.75em;color:var(--cold);">${cold3}</div></div></div>
+                <div class="table-wrap"><table><thead><tr><th>ខ្ទង់រយ</th><th>ដង</th><th>%</th><th>របារ</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+            </div>`;
+        }
+
+        function build3GroupHTML(s3, tot) {
+            const groups={};
+            for(let g=0;g<10;g++){const s=g*100,lbl=`${s.toString().padStart(3,'0')}-${(s+99).toString().padStart(3,'0')}`; groups[lbl]={c:0,s,e:s+99};}
+            s3.forEach(([n,d])=>{const g=Math.floor(parseInt(n)/100),s=g*100,lbl=`${s.toString().padStart(3,'0')}-${(s+99).toString().padStart(3,'0')}`; if(groups[lbl]) groups[lbl].c+=d.c;});
+            const ga=Object.entries(groups).map(([l,g])=>({l,range:`${g.s.toString().padStart(3,'0')}-${g.e.toString().padStart(3,'0')}`,c:g.c,pct:(g.c/tot)*100})).sort((a,b)=>b.pct-a.pct);
+            const maxP=Math.max(...ga.map(g=>g.pct),1);
+            const bars=ga.map(g=>`<div class="bar-item" style="height:${Math.max((g.pct/maxP)*120,15)}px;" title="${g.l}: ${g.c}ដង"><span class="bar-pct">${g.pct.toFixed(1)}%</span><span class="bar-lbl">${g.l}</span></div>`).join('');
+            const rows=ga.map(g=>{const bc=g.pct>15?'fill-hot':g.pct>8?'fill-warm':'fill-cold';const cls=g.pct>15?'row-hot':g.pct>8?'row-warm':'row-cold';const tag=g.pct>15?'<span class="tag tag-hot">🔥</span>':g.pct>8?'<span class="tag tag-warm">🟡</span>':'<span class="tag tag-cold">❄️</span>';return `<tr class="${cls}"><td><strong>${g.l}</strong></td><td>${g.range}</td><td>${g.c}</td><td>${g.pct.toFixed(2)}%</td><td><div class="mini-progress"><div class="mini-progress-fill ${bc}" style="width:${Math.max(g.pct,1)}%"></div></div></td><td>${tag}</td></tr>`;}).join('');
+            return `<div class="card"><div class="bar-row">${bars}</div><div class="table-wrap" style="margin-top:8px;"><table><thead><tr><th>ក្រុម</th><th>ចន្លោះ</th><th>ដង</th><th>%</th><th>របារ</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+        }
+
+        function refreshDailyTab() {
+            const data = window._data || getData();
+            const tot = window._tot;
+            if (!data || !data.length) {
+                document.getElementById('dailyStatsList').innerHTML = '<div class="empty-state"><p>មិនទាន់មានទិន្នន័យ</p></div>';
+                return;
+            }
+            const ds={}; for(let i=0;i<7;i++) ds[i]={c:0,nums:[],uniq:new Set()};
+            data.forEach(r=>{ds[r.dayOfWeek].c++; Object.values(r.posts).forEach(p=>{ds[r.dayOfWeek].nums.push(p.twoDigit);ds[r.dayOfWeek].uniq.add(p.twoDigit);});});
+
+            document.getElementById('dailyStatsList').innerHTML = DAYS_KHMER.map((name,i)=>{
+                const d=ds[i]; const fm={}; d.nums.forEach(n=>fm[n]=(fm[n]||0)+1);
+                const top=Object.entries(fm).sort((a,b)=>b[1]-a[1]).slice(0,3);
+                const miss=[]; for(let j=0;j<100;j++){const n=j.toString().padStart(2,'0');if(!d.uniq.has(n)) miss.push(n);}
+                return `<div class="day-item"><span class="day-name">${name}</span><span class="day-stats">ចាក់: <strong>${d.c}</strong> | ចេញច្រើន: ${top.length?top.map(([n,c])=>`${n}(${c})`).join(', '):'-'} | មិនទាន់: ${miss.length} លេខ</span></div>`;
+            }).join('');
+
+            const chart=document.getElementById('dailyChart');
+            const mc=Math.max(...Object.values(ds).map(d=>d.nums.length),1);
+            chart.innerHTML = DAYS_KHMER.map((name,i)=>`<div class="bar-item" style="height:${Math.max((ds[i].nums.length/mc)*120,15)}px;" title="${name}: ${ds[i].nums.length} លេខ"><span class="bar-pct">${ds[i].nums.length}</span><span class="bar-lbl">${name}</span></div>`).join('');
+
+            document.getElementById('dailyTopNumbers').innerHTML = '<div class="stats-mini">'+DAYS_KHMER.map((name,i)=>{const fm={};ds[i].nums.forEach(n=>fm[n]=(fm[n]||0)+1);const top=Object.entries(fm).sort((a,b)=>b[1]-a[1]).slice(0,5);return `<div class="stat-mini"><div class="lbl">${name}</div><div style="font-size:0.7em;">${top.length?top.map(([n,c])=>`${n}(${c})`).join('<br>'):'-'}</div></div>`;}).join('')+'</div>';
+
+            document.getElementById('dailyMissingNumbers').innerHTML = '<div class="stats-mini">'+DAYS_KHMER.map((name,i)=>{const miss=[];for(let j=0;j<100;j++){const n=j.toString().padStart(2,'0');if(!ds[i].uniq.has(n)) miss.push(n);}return `<div class="stat-mini"><div class="lbl">${name}</div><div style="font-size:0.65em;">មិនទាន់ ${miss.length} លេខ<br>${miss.slice(0,6).join(', ')}${miss.length>6?'...':''}</div></div>`;}).join('')+'</div>';
+        }
+
+        function refreshPredictTab() {
+            const s2 = window._s2, sh = window._sh, tot = window._tot;
+            if (!s2 || !tot) {
+                document.getElementById('predicted_2digit').textContent = '-';
+                return;
+            }
+            document.getElementById('predicted_2digit').textContent = s2.slice(0,5).map(([n,d])=>`${n} (${((d.c/tot)*100).toFixed(1)}%)`).join(', ');
+            if(sh) document.getElementById('predicted_hundred').textContent = sh.slice(0,3).map(([n,d])=>`ខ្ទង់ ${n} (${((d.c/tot)*100).toFixed(1)}%)`).join(', ');
+            const all=new Set(); for(let i=0;i<100;i++) all.add(i.toString().padStart(2,'0'));
+            const app=new Set(s2.map(([n])=>n)); const miss=[...all].filter(n=>!app.has(n));
+            document.getElementById('long_overdue').textContent = miss.length>0?`មិនទាន់ចេញ ${miss.length} លេខ៖ ${miss.slice(0,8).join(', ')}${miss.length>8?'...':''}`:'គ្រប់លេខបានចេញហើយ!';
+
+            const top15 = s2.slice(0,15);
+            const maxP = Math.max(...top15.map(([_,d])=>(d.c/tot)*100),1);
+            document.getElementById('predictChart').innerHTML = top15.map(([n,d])=>{const p=(d.c/tot)*100;return `<div class="bar-item" style="height:${Math.max((p/maxP)*120,15)}px;" title="${n}: ${d.c}ដង"><span class="bar-pct">${p.toFixed(1)}%</span><span class="bar-lbl">${n}</span></div>`;}).join('');
+        }
+
+        function refreshHistoryTab() {
+            const data = allHistoryData.length ? allHistoryData : getData();
+            allHistoryData = data;
+            document.getElementById('historyCount').textContent = data.length;
+            renderHistoryTable(data);
+        }
+
+        function renderHistoryTable(data) {
+            const tbody = document.getElementById('historyBody');
+            if (!data.length) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;">គ្មានទិន្នន័យ</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.slice().reverse().map((r,i)=>
+                `<tr><td>${i+1}</td><td>${getDayName(r.dayOfWeek)}</td><td>${r.date}</td><td>${r.time}</td><td>${r.posts.A.twoDigit}/${r.posts.A.threeDigit}</td><td>${r.posts.B.twoDigit}/${r.posts.B.threeDigit}</td><td>${r.posts.C.twoDigit}/${r.posts.C.threeDigit}</td><td>${r.posts.D.twoDigit}/${r.posts.D.threeDigit}</td><td>${r.posts.H.twoDigit}/${r.posts.H.threeDigit}</td></tr>`
+            ).join('');
+        }
+
+        function filterHistory() {
+            const q = document.getElementById('historySearch').value.toLowerCase();
+            const data = allHistoryData.length ? allHistoryData : getData();
+            const filtered = q ? data.filter(r => r.date.includes(q) || getDayName(r.dayOfWeek).toLowerCase().includes(q)) : data;
+            renderHistoryTable(filtered);
+        }
+
+        function exportData() {
+            const data = allHistoryData.length ? allHistoryData : getData();
+            if (!data.length) { showToast('គ្មានទិន្នន័យ!'); return; }
+            let csv = 'ល.រ,ថ្ងៃ,កាលបរិច្ឆេទ,ម៉ោង,ប៉ុស A(2),ប៉ុស A(3),ប៉ុស B(2),ប៉ុស B(3),ប៉ុស C(2),ប៉ុស C(3),ប៉ុស D(2),ប៉ុស D(3),ប៉ុស H(2),ប៉ុស H(3)\n';
+            data.forEach((r,i)=>{csv+=`${i+1},${getDayName(r.dayOfWeek)},${r.date},${r.time}`;['A','B','C','D','H'].forEach(p=>csv+=`,${r.posts[p].twoDigit},${r.posts[p].threeDigit}`);csv+='\n';});
+            const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`lottery_${new Date().toISOString().split('T')[0]}.csv`;a.click();
+            showToast('📥 ទាញយកដោយជោគជ័យ!');
+        }
+
+        // ============ INIT ============
+        refreshAll();
+    </script>
+</body>
+</html>
